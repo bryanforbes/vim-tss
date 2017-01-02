@@ -118,7 +118,7 @@ function! tss#quickinfo()
 	call tss#debug('Getting quick info for ' . file)
 	let lines = systemlist('node ' . shellescape(s:path . '/../bin/quickinfo.js') . ' ' . shellescape(file) . ' ' . pos[1] . ' ' . pos[2])
 
-	echo(join(lines, "\n"))
+	redraw | echo(join(lines, "\n"))
 endfunction
 
 " Populate the location list with references to the symbol at the current
