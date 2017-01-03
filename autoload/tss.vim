@@ -151,25 +151,27 @@ function! tss#omnicomplete(findstart, base)
 		return offset - 1
 	else
 		let file = expand('%')
-		let comps = tss#completions(file, pos[1], offset, a:base)
+		let response = tss#completions(file, pos[1], offset, a:base)
 
 		let enableMenu = stridx(&completeopt, 'menu') != -1
 		let baseLength = strlen(a:base)
 
-		if enableMenu
-			let entries = []
+		if has_key(response, 'success') && response.success
+			if enableMenu
+				for comp in response.body
+					call complete_add({ 'word': comp.name, 'menu': comp.kind })
 
-			for comp in comps
-				call complete_add({ 'word': comp.name, 'menu': comp.kind })
+					if complete_check()
+						break
+					endif
+				endfor
 
-				if complete_check()
-					break
-				endif
-			endfor
-
-			return entries
+				return []
+			else
+				return map(response.body, 'v:val.name')
+			endif
 		else
-			return map(comps, 'v:val.name')
+			return []
 		endif
 	endif
 endfunction
